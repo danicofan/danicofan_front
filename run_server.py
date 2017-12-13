@@ -29,7 +29,7 @@ class SeriesHandler(tornado.web.RequestHandler):
 
 class AllTitlesHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write(json.dumps(danime.title_index.keys()))
+        self.write(json.dumps(list(danime.title_index.keys())))
 
 
 class MainHandler(tornado.web.RequestHandler):
