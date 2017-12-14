@@ -1,9 +1,9 @@
 <template>
     <div>
         <div id="drawarea" class="container">
-            <h1>登録済み作品</h1>
+            <h1>Series</h1>
             <li v-for="item in items">
-                <router-link v-bind:to="'/series/'+item">{{ item }}</router-link>
+                {{ item }}
             </li>
         </div>
     </div>
@@ -21,9 +21,14 @@
         },
         methods: {
             drawAll() {
-                axios.get(this.apiUrl + "/all").then((response) => {
-                    response.data.forEach((video) => {
-                        this.items.push(video)
+                var params = new URLSearchParams();
+                params.append('title', this.$route.params.title);
+                axios.post(
+                    this.apiUrl + "/series",
+                    params
+                ).then((response) => {
+                    response.data.videos.forEach((video) => {
+                        this.items.push(video.title)
                     })
                 })
             }
