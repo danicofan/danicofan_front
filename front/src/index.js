@@ -6,13 +6,10 @@ Vue.use(VueRouter)
 import App from './App.vue'
 import Series from './Series.vue'
 
-const Foo = {template: '<div>foo</div>'}
-const Bar = {template: '<div>bar</div>'}
-
 const routes = [
     {path: '/', component: App},
     {path: '/series/:title', component: Series},
-    {path: '/bar', component: Bar}
+    {path: '*', redirect: '/'}
 ]
 
 const router = new VueRouter({routes: routes})

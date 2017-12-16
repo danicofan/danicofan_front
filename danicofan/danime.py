@@ -46,19 +46,22 @@ class DAnimeSeries(object):
         else:
             self.videos.append(video)
 
-    def dump(self):
-        return json.dumps({
+    def dump_dict(self):
+        return {
             "title": self.title,
             "firstAppeared": self.first_appeared,
             "videos": [video.dump() for video in self.videos]
-        }, indent=2)
+        }
+
+    def dump_json(self):
+        return json.dumps(self.dump_dict(), indent=2)
 
     def save(self, directory):
         assert isinstance(self.title, unicode)
         filename = self.__kakashi_convert(self.title) + ".json"
         path = os.path.join(directory, filename)
         with open(path, "w+") as f:
-            f.write(self.dump())
+            f.write(self.dump_json())
 
     @staticmethod
     def load(path):
@@ -90,10 +93,10 @@ class DAnimeSeries(object):
 class DAnimeService(object):
     def __init__(self, directory):
         self.directory = directory
-        self.series = [
+        self.all_series = [
             DAnimeSeries.load(path) for path in glob.glob(os.path.join(self.directory, '*.json'))
         ]
-        self.title_index = dict([(series.title, series) for series in self.series])
+        self.title_index = dict([(series.title, series) for series in self.all_series])
 
     def add_series(self, series):
         """

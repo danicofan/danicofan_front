@@ -3,7 +3,7 @@
         <div id="drawarea" class="container">
             <h1>登録済み作品</h1>
             <li v-for="item in items">
-                <router-link v-bind:to="'/series/'+item">{{ item }}</router-link>
+                <router-link v-bind:to="'/series/'+item.title">{{ item.title }}</router-link>
             </li>
         </div>
     </div>
@@ -22,9 +22,11 @@
         methods: {
             drawAll() {
                 axios.get(this.apiUrl + "/all").then((response) => {
-                    response.data.forEach((video) => {
-                        this.items.push(video)
-                    })
+                    response.data
+                        .sort((x, y) => (- (x.firstAppeared - y.firstAppeared)))
+                        .forEach((video) => {
+                            this.items.push(video)
+                        })
                 })
             }
         },

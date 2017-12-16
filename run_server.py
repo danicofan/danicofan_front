@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
 import argparse
-import glob
+import json
 import os
-import random
 
-import magic
-import tornado
-import tornado.httpclient
-import tornado.httpserver
 import tornado.web
 
 import danicofan
-import json
 
 ROOTPATH = os.path.dirname(__file__)
 
@@ -24,12 +18,20 @@ class SeriesHandler(tornado.web.RequestHandler):
         series = danime.search_series_by_title(title)
         print(series)
 
-        self.write(series.dump())
+        self.write(series.dump_json())
 
 
 class AllTitlesHandler(tornado.web.RequestHandler):
+    def initialize(self):
+        all_series = []
+        for series in danime.title_index.values():
+            d = series.dump_dict()
+            del d["videos"]
+            all_series.append(d)
+        self.all_series = all_series
+
     def get(self):
-        self.write(json.dumps(list(danime.title_index.keys())))
+        self.write(json.dumps(self.all_series))
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -49,7 +51,11 @@ if __name__ == "__main__":
     )
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--datapath")
     args = parser.parse_args()
+
+    if args.datapath is not None:
+        danime = danicofan.danime.DAnimeService(args.datapath)
 
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(args.port)
